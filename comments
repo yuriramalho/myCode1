@@ -1,0 +1,28 @@
+
+<?php
+    try {
+	global $comments;
+	
+        $host = '127.0.0.1';
+        $user = 'root';
+        $pass = '';
+
+        # MySQL with PDO_MYSQL
+
+        $DBH = new PDO("mysql:host=$host;dbname=dbass", $user, $pass);
+    } catch(PDOException $e) {echo 'Error';}  
+
+    $q = $DBH->prepare("select * from comments where comment = :comment");
+	 $q->bindValue(':comment', $comments);
+    
+	$check = $q->fetchAll(PDO::FETCH_ASSOC);
+	$q->execute();
+
+    
+
+    foreach($check as $row){
+
+       echo $row['comment'];
+
+    }
+ ?>
