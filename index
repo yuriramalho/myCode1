@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<?php session_start();
+
+//if (isset($_SESSION["points"])) {
+  //$points = $_SESSION["points"];
+  //echo "You've earned $points points.\n";
+//} else {
+  //$_SESSION["points"] = 0;  # default
+//}?>
+<html>
+    <head>
+        <title>WorkMates</title>
+    </head>
+	<style> .error {color: #FF0000;} </style>
+    <body>
+	
+	<p>Welcome to WorkMates!</p>
+   
+	<?php	
+	
+	global $error, $shortpass;
+		
+		
+		
+		if($_POST)
+		
+		{$username = $_POST['username'];
+		$password = $_POST['password'];
+		
+		
+		//Connecting to the database
+try {
+			$host = '127.0.0.1';
+			$user = 'root';
+			$pass = '';
+		
+		# MySQL with PDO_MYSQL
+		
+			$DBH = new PDO("mysql:host=$host;dbname=dbass", $user, $pass);
+		} catch(PDOException $e) {echo $e->getMessage();}
+	
+	//Select command to select data from the database.	
+		$q = $DBH->prepare("select * from signup1 where username = :username and password = :password LIMIT 1");
+    $q->bindValue(':username', $username);
+    $q->bindValue(':password',  $password);
+    $q->execute();
+    $row = $q->fetch(PDO::FETCH_ASSOC);
+ 
+    $message = '';
+    if (empty($row)){
+        $message= 'Sorry your log in details are not correct';
+    } else {
+		
+		$_SESSION['username'] = $row['username'];
+   		$_SESSION['id'] = $row['userID'];
+		$_SESSION['firstname'] = $row['firstname'];
+	    $_SESSION['surname'] = $row['surname'];
+	    $_SESSION['email'] = $row['email'];
+	    $_SESSION['age'] = $row['age'];
+		
+		//$email = $row['email'];
+        
+        $message = 'Loggin in!';        
+		echo'<script> window.location="profile.php?id=' . $row['userID'] . '"; </script>';
+    }
+	//require_once('c:\wamp\www\myphp\check.php');	
+	//Validation
+		
+	//|| !filter_var($email, FILTER_VALIDATE_EMAIL)
+			if($username == ''){
+			$error .= 'Please enter a valid Username. <br/> ';
+		}
+		
+		if($password == ''){
+			$error .= 'Please enter a password <br/> ';
+		}
+		
+		if (strlen($password)< 8){
+			$shortpass .= '*Password is too short';
+		}
+		
+		if ($error){
+			$error;
+		}
+	
+	//	echo'<script> window.location="profile.php"; </script>';
+}
+	
+ 
+	
+		
+	   ?> 
+	
+   
+   <form action="index.php" method="post">
+      	
+   Username: <input type="text" name="username"/> <br/><br/>
+   Password: <input type="password" name="password" /> <?php echo $shortpass; ?> <br/><br/>
+   <input type="submit" value="Login"/>
+   </form>
+   
+   <?php echo $error; ?>
+   <?php
+    if(!empty($message)){
+     echo '<br>';
+     echo $message;
+    }
+ ?>
+  <br/> Not registered yet? <a href="http://localhost/myphp/signupdetails.php">Sign Up!</a></br>
+   Forgotten your password? Retrieve it <a href="http://localhost/myphp/forgottenpassword.php">here</a>. 
+   
+    </body>
+	
+</html>
