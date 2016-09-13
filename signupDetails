@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<?php session_start(); ?>
+ <html>
+    <head>
+        <title>WorkMates</title>
+    </head>
+	<?php 
+	
+	global $error, $g_der;
+		   
+		   //Creating variable for the POST method
+		   if ($_POST){
+			
+			$username = $_POST ['username'];   
+			$firstname = $_POST ['firstname'];
+			$surname = $_POST['surname'];
+			$email = $_POST['email'];
+			$password = $_POST['password'];
+			$age = $_POST ['age'];
+			$g_der = $_POST ['g_der'];
+	
+	//Connecting to the database
+try {
+			$host = '127.0.0.1';
+			$user = 'root';
+			$pass = '';
+		
+		# MySQL with PDO_MYSQL
+		
+			$DBH = new PDO("mysql:host=$host;dbname=dbass", $user, $pass);
+		} catch(PDOException $e) {echo $e->getMessage();}
+	
+	//INSERT command to add data to the data base thru the page. Note the sign ` instead of '	
+		$sql = "INSERT INTO `signup1` (username,firstname,surname,email,password,age,g_der) VALUES (?,?,?,?,?,?,?);";
+			
+			$sth = $DBH->prepare($sql);
+			
+			$sth->bindParam(1,$username,PDO::PARAM_INT);
+			$sth->bindParam(2,$firstname,PDO::PARAM_INT);
+			$sth->bindParam(3,$surname,PDO::PARAM_INT);
+			$sth->bindParam(4,$email,PDO::PARAM_INT);
+			$sth->bindParam(5,$password,PDO::PARAM_INT);
+			$sth->bindParam(6,$age,PDO::PARAM_INT);
+			$sth->bindParam(7,$g_der,PDO::PARAM_INT);
+			$sth->execute();
+			
+			echo 'You are now registered!';
+
+		   
+		$lastId = $DBH->lastInsertId();echo $lastId;
+		
+		//Checking for errors (validation)		
+		if($username == ''){
+			$error .= 'Please enter your First Name. <br/> ';
+		}
+		
+		if($firstname == ''){
+			$error .= 'Please enter your First Name. <br/> ';
+		}
+		
+		if($password == ''){
+			$error .= 'Please enter your new password. <br/> ';
+		}
+		
+		if($email == '' || !filter_var($email, FILTER_VALIDATE_EMAIL) ){
+			$error .= 'Please enter a valid E-mail. <br/> ';
+		}
+		
+		if($surname == ''){
+			$error .= 'Please enter your Surname <br/> ';
+
+		}
+		
+		if ($age == '') {
+			$error .= 'Please enter your Age <br/>';
+		}
+		
+		if ($g_der == '') {
+			$error .= 'Please enter your Gender <br/>';
+		}
+		
+		if ($error){
+			$error;
+		}
+		
+		if (!$error) {
+		
+			echo 'Registration Successful';
+
+				echo'<script> window.location="index.php"; </script>';
+}
+ 
+//require_once('c:\wamp\www\myphp\check.php');	
+	
+	
+	}
+?>
+    <body>
+	<p>Please, fill out the form below so you can have instant access to our services!</p>
+
+	<form action="signupdetails.php" method="post">
+	
+	Username: <input type="text" name="username" />   <br/>
+    First name: <input type="text" name="firstname" />   <br/>
+    Surname: <input type="text" name="surname" />   <br/>
+	E-mail: <input type="text" name="email" />   <br/>
+	Password: <input type="password" name="password" />   <br/>
+    Age: <input type="text" name="age" />   <br/>	
+    Gender <input type="radio" name="g_der" value="male">Male    
+           <input type="radio" name="g_der" value="female">Female
+            <br>
+
+           <input type="submit"/>
+</form>
+
+<?php echo $error; ?>
+   
+	</body>
+	<html> 
